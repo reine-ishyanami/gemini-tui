@@ -12,8 +12,7 @@ use component::scroll::chat_item_list::ChatItemListScrollProps;
 use component::scroll::chat_show::ChatShowScrollProps;
 use gemini_api::body::request::GenerationConfig;
 use gemini_api::body::{Content, Part, Role};
-use gemini_api::model::blocking::Gemini;
-use gemini_api::param::LanguageModel;
+use gemini_api::model::Gemini;
 use gemini_api::utils::image::blocking::get_image_type_and_base64_string;
 use ratatui::layout::Position as CursorPosition;
 use ratatui::layout::{Alignment, Rect};
@@ -132,6 +131,8 @@ impl UI {
             if let Ok(title) = title_rx.try_recv() {
                 self.gen_title_ing = false;
                 self.title = title;
+                // 更新数据库里的标题
+                modify_title(self.conversation_id.clone(), self.title.clone())?;
             }
             match self.current_windows {
                 CurrentWindows::MainWindow => {
@@ -208,7 +209,7 @@ impl UI {
     /// 初始化 Gemini API
     fn init_gemini(&mut self, key: String) {
         let system_instruction = String::new();
-        let mut gemini = Gemini::new(key, LanguageModel::Gemini1_5Flash);
+        let mut gemini = Gemini::new_default_model(key);
         gemini.set_options(GenerationConfig::default());
         gemini.set_system_instruction(system_instruction.clone());
         let data = StoreData {
@@ -454,7 +455,7 @@ impl UI {
     fn handle_key(
         &mut self,
         chat_tx: mpsc::Sender<ChatType>,
-        title_rx: mpsc::Sender<String>,
+        title_tx: mpsc::Sender<String>,
         chat_rx: &mpsc::Receiver<ChatType>,
     ) {
         // 如果接收消息位为真
@@ -480,7 +481,7 @@ impl UI {
                                     // 总结标题
                                     thread::spawn(move || {
                                         let title = summary_by_gemini(key, response);
-                                        let _ = title_rx.send(title);
+                                        let _ = title_tx.send(title);
                                     });
                                 }
                                 // 推送用户发送的消息保存到数据库
@@ -543,7 +544,7 @@ impl UI {
                                     // 总结标题
                                     thread::spawn(move || {
                                         let title = summary_by_gemini(key, response);
-                                        let _ = title_rx.send(title);
+                                        let _ = title_tx.send(title);
                                     });
                                 }
                                 // 推送用户发送的消息保存到数据库
@@ -973,7 +974,7 @@ impl UI {
 
 /// 通过纯净的 Gemini API 获取对话摘要
 fn summary_by_gemini(key: String, message: String) -> String {
-    let mut pure_gemini = Gemini::new(key, LanguageModel::Gemini1_5Flash);
+    let mut pure_gemini = Gemini::new_default_model(key);
     pure_gemini.set_system_instruction("请给我概括一下这段文字内容，不包含任意标点符号，不大于15字。".into());
     if let Ok((s, _)) = pure_gemini.send_simple_message(message) {
         s
