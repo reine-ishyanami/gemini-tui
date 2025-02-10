@@ -13,7 +13,7 @@ use component::scroll::chat_show::ChatShowScrollProps;
 use gemini_api::body::request::GenerationConfig;
 use gemini_api::body::{Content, Part, Role};
 use gemini_api::model::Gemini;
-use gemini_api::utils::image::blocking::get_image_type_and_base64_string;
+use gemini_api::utils::image::get_image_type_and_base64_string;
 use ratatui::layout::Position as CursorPosition;
 use ratatui::layout::{Alignment, Rect};
 use ratatui::style::{Color, Style};

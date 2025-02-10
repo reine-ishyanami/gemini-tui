@@ -1,5 +1,5 @@
 use anyhow::{bail, Result};
-use gemini_api::utils::image::blocking::get_image_type_and_base64_string;
+use gemini_api::utils::image::get_image_type_and_base64_string;
 use image::codecs::jpeg::JpegEncoder;
 use image::GenericImageView;
 use reqwest::blocking::Client;
