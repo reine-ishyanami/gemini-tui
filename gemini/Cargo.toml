@@ -10,6 +10,7 @@ gemini-api = { path = "../gemini-api", features = [
     "image_analysis",
 ] }
 ratatui = { workspace = true }
+crossterm = { workspace = true }
 anyhow = { workspace = true }
 chrono = { workspace = true }
 serde = { workspace = true }
@@ -19,6 +20,8 @@ rusqlite = { workspace = true }
 image = { workspace = true }
 reqwest = { workspace = true }
 strum = { workspace = true }
+tokio = { workspace = true }
+tokio-macros = { workspace = true }
 
 [[bin]]
 name = "gemini"

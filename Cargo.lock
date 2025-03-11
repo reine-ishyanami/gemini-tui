@@ -331,6 +331,7 @@ checksum = "829d955a0bb380ef178a640b91779e3987da38c9aea133b20614cfed8cdea9c6"
 dependencies = [
  "bitflags 2.6.0",
  "crossterm_winapi",
+ "futures-core",
  "mio",
  "parking_lot",
  "rustix",
@@ -509,6 +510,7 @@ version = "0.7.1"
 dependencies = [
  "anyhow",
  "chrono",
+ "crossterm",
  "gemini-api",
  "image",
  "libc",
@@ -520,6 +522,8 @@ dependencies = [
  "serde",
  "serde_json",
  "strum",
+ "tokio",
+ "tokio-macros",
 ]
 
 [[package]]
